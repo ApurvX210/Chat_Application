@@ -11,7 +11,7 @@ const chatSchema= mongoose.Schema({
     },
     users:[{
         type:mongoose.ObjectId,
-        ref:"Users"
+        ref:"users"
     }],
     latestMessage:{
         type:mongoose.ObjectId,
@@ -19,7 +19,7 @@ const chatSchema= mongoose.Schema({
     },
     groupAdmin:{
         type:mongoose.ObjectId,
-        ref:"Users"
+        ref:"users"
     }
 },{timestamps:true})
 export default mongoose.model("chats",chatSchema);
