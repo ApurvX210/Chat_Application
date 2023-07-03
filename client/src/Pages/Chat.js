@@ -9,9 +9,9 @@ const Chat = () => {
   return (
     <div style={{width:"100%"}}>
       {user && <SideDrawer/>}
-      <Box display={'flex'}  justifyContent={'space-between'} w={'100%'} h={'91.5vh'} p={'10'}>
-        {user && <MyChats/>}
-        {user && <ChatBox/>}
+      <Box display={'flex'}  justifyContent={'space-between'} w={'100%'} h={'90.5vh'} p={'2'}>
+        {user?.token && <MyChats/>}
+        {user?.token && <ChatBox/>}
       </Box>
     </div>
   )

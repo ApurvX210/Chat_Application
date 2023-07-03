@@ -4,6 +4,7 @@ import connectDB from './config/connectDB.js'
 import authRoutes from './Routes/authRoutes.js'
 import chatRoutes from './Routes/chatRoutes.js'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
+import cors from 'cors'
 const app=express();
 dotenv.config();
 connectDB();
@@ -12,6 +13,13 @@ app.get('/',(req,res)=>{
     res.send({Message:"Hello"})
 })
 app.use(express.json());
+app.use(
+	cors({
+		origin: "http://localhost:3000",
+		methods: "GET,POST,PUT,DELETE",
+		credentials: true,
+	})
+);
 //Api 
 app.use('/api/auth',authRoutes);
 app.use('/api/chat',chatRoutes);

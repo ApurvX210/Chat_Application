@@ -18,6 +18,7 @@ import {
   Input,
   Toast,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
@@ -33,7 +34,7 @@ const SideDrawer = () => {
   const [searchReslt, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
-  const { user, SetUser } = ChatState();
+  const { user, SetUser, setSelectedChat, chats, setChats } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const logoutHandler = () => {
@@ -41,38 +42,55 @@ const SideDrawer = () => {
     SetUser({});
     navigate("/");
   };
-  const toast=useToast();
-  const handleSearch = async()=>{
-    if(!search){
+  const toast = useToast();
+  const handleSearch = async () => {
+    if (!search) {
       toast({
-        title: 'Please enter something!',
-        status: 'warning',
+        title: "Please enter something!",
+        status: "warning",
         duration: 5000,
         isClosable: true,
-        position:'top-left'
-      })
+        position: "top-left",
+      });
+      return;
     }
     try {
       setLoading(true);
-      const{data}=await axios.get(`/api/auth/users?search=${search}`);
-      console.log("hello")
+      const { data } = await axios.get(`/api/auth/users?search=${search}`);
+      console.log("hello");
       setSearchResult(data);
       setLoading(false);
       console.log(data);
     } catch (error) {
       console.log(error);
       toast({
-        title: 'Something went wrong',
-        status: 'warning',
+        title: "Something went wrong",
+        status: "warning",
         duration: 5000,
         isClosable: true,
-        position:'top-left'
-      })
+        position: "top-left",
+      });
     }
-  }
-  const accessChat =()=>{
-
-  }
+  };
+  const accessChat = async (userId) => {
+    try {
+      setLoadingChat(true);
+      const { data } = await axios.post("/api/chat", { userId });
+      setLoadingChat(false);
+      setSelectedChat(data);
+      onClose();
+      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Something went wrong",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+    }
+  };
   return (
     <>
       <Box
@@ -93,7 +111,7 @@ const SideDrawer = () => {
             </Text>
           </Button>
         </Tooltip>
-        <Text fontSize={"2xl"} color={"#AD825F"} fontFamily={"Belanosima"}>
+        <Text fontSize={"3xl"} color={"#AD825F"} fontFamily={"Belanosima"}>
           CONVERSA
         </Text>
         <div style={{ display: "flex", justifyContent: "center" }}>
@@ -132,7 +150,7 @@ const SideDrawer = () => {
           <DrawerHeader>Search User</DrawerHeader>
 
           <DrawerBody>
-            <Box display={'flex'} pb={'2'}>
+            <Box display={"flex"} pb={"2"}>
               <Input
                 placeholder="Type here..."
                 mr={"2"}
@@ -141,16 +159,19 @@ const SideDrawer = () => {
               />
               <Button onClick={handleSearch}>Go</Button>
             </Box>
-            {loading?(
-              <ChatLoading/>
-            ):(
-                searchReslt?.map(user=>(
-                  <UserListItem key={user._id} user={user} handleFunction={()=>accessChat(user._id)}/>
-                ))
+            {loading ? (
+              <ChatLoading />
+            ) : (
+              searchReslt?.map((user) => (
+                <UserListItem
+                  key={user._id}
+                  user={user}
+                  handleFunction={() => accessChat(user._id)}
+                />
+              ))
             )}
+            {loadingChat && <Spinner d="flex" marginLeft={'auto'}/>}
           </DrawerBody>
-
-          
         </DrawerContent>
       </Drawer>
     </>
