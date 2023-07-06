@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import connectDB from './config/connectDB.js'
 import authRoutes from './Routes/authRoutes.js'
 import chatRoutes from './Routes/chatRoutes.js'
+import messageRoutes from './Routes/messageRoutes.js'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import cors from 'cors'
 const app=express();
@@ -23,6 +24,7 @@ app.use(
 //Api 
 app.use('/api/auth',authRoutes);
 app.use('/api/chat',chatRoutes);
+app.use('/api/message',messageRoutes);
 //error handler
 app.use(notFound);
 app.use(errorHandler);

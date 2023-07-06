@@ -5,7 +5,8 @@ import axios from "axios";
 import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
 import { getSender } from "../../Config/ChatLogic";
-const MyChats = () => {
+import GroupChatModal from "./GroupChatModal";
+const MyChats = ({fetchAgain}) => {
   const [loggedUser, setLoggedUser] = useState();
   const { user, SetUser, selectedChat, setSelectedChat, chats, setChats } =
     ChatState();
@@ -28,12 +29,16 @@ const MyChats = () => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
-  }, []);
+  }, [fetchAgain]);
+  const setChat =async(chat)=>{
+    await setSelectedChat(chat)
+  }
   return (
     <Box
-      d={{ base: selectedChat ? "none" : "flex", md: "flex" }}
+      display={{ base: Object.keys(selectedChat) != 0 ? "none" : "flex", md: "flex" }}
       flexDir="column"
       alignItems="center"
+      boxShadow="dark-lg"
       p={3}
       bg="white"
       w={{ base: "100%", md: "31%" }}
@@ -51,19 +56,21 @@ const MyChats = () => {
         alignItems="center"
       >
         My Chats
-        <Button
-          display={"flex"}
-          fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-          rightIcon={<AddIcon />}
-        >
-          New Group Chat
-        </Button>
+        <GroupChatModal>
+          <Button
+            display={"flex"}
+            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+            rightIcon={<AddIcon />}
+          >
+            New Group Chat
+          </Button>
+        </GroupChatModal>
       </Box>
       <Box
         display={"flex"}
         flexDir="column"
         p={3}
-        bg="#F8EFE6"
+        bg="#edc6a6"
         height={"90%"}
         w="100%"
         borderRadius="lg"
@@ -74,10 +81,10 @@ const MyChats = () => {
             {chats?.map((chat) => {
               return (
                 <Box
-                  onClick={() => setSelectedChat(chat)}
+                  onClick={()=>setChat(chat)}
                   cursor="pointer"
-                  bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
-                  color={selectedChat === chat ? "white" : "black"}
+                  bg={selectedChat === chat ? "#FEFCBF" : "#FDF0E7"}
+                  color={selectedChat === chat ? "#975A16" : "black"}
                   px={3}
                   py={2}
                   borderRadius="lg"

@@ -5,7 +5,7 @@ const ChatContext = createContext();
 
 const ChatProvider =({children})=>{
     const[user,SetUser]=useState({});
-    const[selectedChat,setSelectedChat]=useState();
+    const[selectedChat,setSelectedChat]=useState({});
     const[chats,setChats]=useState([]);
     const navigate=useNavigate();
     axios.defaults.headers.common['Authorization']=`Bearer ${user?.token}`
