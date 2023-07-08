@@ -45,7 +45,7 @@ const SignUp = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          setPic(data.url.toString());
+          setPic(data?.url.toString());
           console.log(data.url.toString());
           setLoading(false);
         })
@@ -92,7 +92,7 @@ const SignUp = () => {
     }
     
     try {
-      const {data}=await axios.post('/api/auth/signup',{name,email,password:Pass,Pic});
+      const {data}=await axios.post('/api/auth/signup',{name,email,password:Pass,pic:Pic});
       toast({
         title: "Registration Successfull",
         status: "success",

@@ -25,6 +25,7 @@ export const loginUser = async (req, res) => {
 export const signupUser = async (req, res) => {
     try {
         const { name, email, password, pic } = req.body;
+        console.log(pic);
         if (!name || !email || !password) {
             res.status(400).send({
                 message: "Please Enter All the Fields"

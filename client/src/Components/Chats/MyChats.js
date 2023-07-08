@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../../Context/ChatProvider";
-import { Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, Stack, Text, useToast,Avatar } from "@chakra-ui/react";
 import axios from "axios";
 import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
-import { getSender } from "../../Config/ChatLogic";
+import { capitalizeFirstLetter, getSender, getSenderId } from "../../Config/ChatLogic";
 import GroupChatModal from "./GroupChatModal";
-const MyChats = ({fetchAgain}) => {
+const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const { user, SetUser, selectedChat, setSelectedChat, chats, setChats } =
     ChatState();
@@ -30,12 +30,15 @@ const MyChats = ({fetchAgain}) => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
   }, [fetchAgain]);
-  const setChat =async(chat)=>{
-    await setSelectedChat(chat)
-  }
+  const setChat = (chat) => {
+    setSelectedChat(chat);
+  };
   return (
     <Box
-      display={{ base: Object.keys(selectedChat) != 0 ? "none" : "flex", md: "flex" }}
+      display={{
+        base: Object.keys(selectedChat) != 0 ? "none" : "flex",
+        md: "flex",
+      }}
       flexDir="column"
       alignItems="center"
       boxShadow="dark-lg"
@@ -67,12 +70,12 @@ const MyChats = ({fetchAgain}) => {
         </GroupChatModal>
       </Box>
       <Box
-        display={"flex"}
+        display="flex"
         flexDir="column"
         p={3}
-        bg="#edc6a6"
-        height={"90%"}
+        bg="#F8F8F8"
         w="100%"
+        h="100%"
         borderRadius="lg"
         overflowY="hidden"
       >
@@ -81,20 +84,41 @@ const MyChats = ({fetchAgain}) => {
             {chats?.map((chat) => {
               return (
                 <Box
-                  onClick={()=>setChat(chat)}
+                display={'flex'}
+                
+                alignItems={'center'}
+                  onClick={() => setChat(chat)}
                   cursor="pointer"
-                  bg={selectedChat === chat ? "#FEFCBF" : "#FDF0E7"}
-                  color={selectedChat === chat ? "#975A16" : "black"}
+                  bg={selectedChat === chat ? "#c7c5c5" : "#E8E8E8"}
+                  color={"black"}
                   px={3}
                   py={2}
                   borderRadius="lg"
                   key={chat._id}
                 >
-                  <Text>
-                    {!chat.groupChat
-                      ? getSender(loggedUser, chat.users)
-                      : chat.chatName}
-                  </Text>
+                  <Avatar
+                    mt={"7px"}
+                    mr={1}
+                    size={"md"}
+                    src={chat.groupChat==true? ('https://cdn-icons-png.flaticon.com/128/1769/1769041.png'): getSenderId(user,chat.users).pic}
+                    cursor={"pointer"}
+
+                  />
+                  <Box ml={2}>
+                    <Text>
+                      {!chat.groupChat
+                        ? capitalizeFirstLetter(getSender(loggedUser, chat.users)) 
+                        : capitalizeFirstLetter(chat.chatName)}
+                    </Text>
+                    {chat?.latestMessage && (
+                      <Text fontSize="xs">
+                        <b>{chat.latestMessage.sender.name} : </b>
+                        {chat.latestMessage.content.length > 50
+                          ? chat.latestMessage.content.substring(0, 51) + "..."
+                          : chat.latestMessage.content}
+                      </Text>
+                    )}
+                  </Box>
                 </Box>
               );
             })}

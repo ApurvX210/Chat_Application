@@ -20,6 +20,7 @@ import {
   useToast,
   Spinner,
 } from "@chakra-ui/react";
+import { Badge } from "antd";
 import React, { useState } from "react";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar, AvatarBadge, AvatarGroup } from "@chakra-ui/react";
@@ -29,12 +30,21 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ChatLoading from "./ChatLoading";
 import UserListItem from "./UserListItem";
+import { getSender } from "../../Config/ChatLogic";
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
   const [searchReslt, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
-  const { user, SetUser, setSelectedChat, chats, setChats } = ChatState();
+  const {
+    user,
+    SetUser,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const logoutHandler = () => {
@@ -97,7 +107,7 @@ const SideDrawer = () => {
         display={"flex"}
         justifyContent={"space-between"}
         alignItems={"center"}
-        bg={"#FDF0E7"}
+        bg={"#F8DCB7"}
         w={"100%"}
         p={"5px 10px 5px 10px"}
         borderWidth={"5px"}
@@ -117,15 +127,35 @@ const SideDrawer = () => {
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Menu>
             <MenuButton p={"1"}>
-              <BellIcon fontSize={"2xl"} m={"1"} />
-              {/* <MenuList></MenuList> */}
+              <Badge count={notification.length} size="small">
+                <BellIcon fontSize={"2xl"} mr={"1"} />
+              </Badge>
             </MenuButton>
+            <MenuList pl={2}>
+              {!notification.length && "No new message"}
+              {notification?.map((notif) => {
+                return (
+                  <MenuItem
+                    key={notif._id}
+                    onClick={() => {
+                      setSelectedChat(notif.chat);
+                      setNotification(notification.filter((n) => n !== notif));
+                    }}
+                  >
+                    {notif.chat.groupChat
+                      ? `New Message in ${notif.chat.chatName}`
+                      : `New Message from ${getSender(user, notif.chat.users)}`}
+                  </MenuItem>
+                );
+              })}
+            </MenuList>
           </Menu>
           <Menu>
             <MenuButton
               bg={"#FDF0E7"}
               as={Button}
               rightIcon={<ChevronDownIcon />}
+              ml={3}
             >
               <Avatar
                 src={user.pic}
@@ -170,7 +200,7 @@ const SideDrawer = () => {
                 />
               ))
             )}
-            {loadingChat && <Spinner d="flex" marginLeft={'auto'}/>}
+            {loadingChat && <Spinner d="flex" marginLeft={"auto"} />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

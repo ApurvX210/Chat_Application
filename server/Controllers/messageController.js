@@ -30,7 +30,7 @@ export const sendMessage = async(req,res)=>{
 export const allMessages =async(req,res)=>{
     try {
         const{chatId}=req.params;
-        if(!chatId){
+        if(chatId===undefined){
             return res.status(400).send({message:"Error Occured"});
         }
         const message=await messageModel.find({chat:chatId}).populate("sender","name pic email").populate("chat");
